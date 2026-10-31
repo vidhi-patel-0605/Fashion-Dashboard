@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>VastraWorks business dashboard with AI assistant</title>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,700&family=Instrument+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#F2F4F8;--sf:#fff;--tx:#14192B;--mu:#5B6378;--pr:#1E2A5A;--mad:#B5483A;--tur:#C98F12;--leaf:#2F7D5B;--ln:#DADFEA;--soft:#E9ECF5;
+box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){color-scheme:dark;--bg:#0E1226;--sf:#151A33;--tx:#E8EAF4;--mu:#9AA3C0;--pr:#9DAEFF;--mad:#E58272;--tur:#E2B23A;--leaf:#5CC49A;--ln:#2A3157;--soft:#1D2342}}
+:root[data-theme="dark"]{color-scheme:dark;--bg:#0E1226;--sf:#151A33;--tx:#E8EAF4;--mu:#9AA3C0;--pr:#9DAEFF;--mad:#E58272;--tur:#E2B23A;--leaf:#5CC49A;--ln:#2A3157;--soft:#1D2342}
+*{box-sizing:border-box}html{height:100%}
+body{margin:0;background:var(--bg);color:var(--tx);font:400 15px/1.5 "Instrument Sans",system-ui,sans-serif}
+h1,h2,.num{font-family:Fraunces,Georgia,serif;font-weight:700;letter-spacing:-.01em}
+.wrap{max-width:1180px;margin:0 auto;padding:20px 18px 48px}
+header{display:flex;flex-wrap:wrap;gap:8px 16px;justify-content:space-between;align-items:baseline;margin-bottom:18px}
+h1{font-size:28px;margin:0}header p{margin:0;color:var(--mu)}
+.tag{font-size:13px;color:var(--mu);border:1px solid var(--ln);border-radius:99px;padding:2px 10px}
+.band{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));background:var(--sf);border-radius:14px;margin-bottom:22px}
+.band div{padding:16px 20px;border-left:1px solid var(--ln)}.band div:first-child{border-left:0}
+.band .num{font-size:30px;line-height:1.15}.band small{display:block;color:var(--mu)}
+.up{color:var(--leaf)}.dn{color:var(--mad)}
+.grid{display:grid;grid-template-columns:minmax(0,1fr) 380px;gap:24px;align-items:start}
+@media(max-width:900px){.grid{grid-template-columns:1fr}.band div{border-left:0;border-top:1px solid var(--ln)}.band div:first-child{border-top:0}}
+h2{font-size:20px;margin:0 0 10px}section{margin-bottom:28px}
+.ins{list-style:none;margin:0;padding:0;display:grid;gap:10px}
+.ins li{background:var(--sf);border-radius:10px;padding:12px 14px;border-left:4px solid var(--tur)}
+.ins li.r{border-color:var(--mad)}.ins li.g{border-color:var(--leaf)}.ins b{display:block}.ins span{color:var(--mu)}
+.chart{background:var(--sf);border-radius:14px;padding:14px}
+svg{width:100%;height:auto;display:block}.lg{display:flex;gap:16px;color:var(--mu);font-size:13px;margin-top:6px}
+.lg i{display:inline-block;width:14px;height:3px;border-radius:2px;margin-right:6px;vertical-align:middle}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:20px}@media(max-width:700px){.two{grid-template-columns:1fr}}
+.row{display:grid;grid-template-columns:120px 1fr auto;gap:10px;align-items:center;padding:6px 0;font-size:14px}
+.bar{height:10px;background:var(--soft);border-radius:5px;overflow:hidden}.bar i{display:block;height:100%;background:var(--pr);border-radius:5px}
+.ask{background:var(--sf);border-radius:14px;padding:16px;position:sticky;top:12px}
+.ask input{width:100%;font:inherit;color:var(--tx);background:var(--bg);border:1px solid var(--ln);border-radius:10px;padding:10px 12px}
+button{font:inherit;cursor:pointer;border-radius:10px;border:1px solid var(--pr);background:var(--pr);color:var(--bg);padding:8px 14px}
+button.o{background:transparent;color:var(--pr)}button:disabled{opacity:.5;cursor:default}
+:is(button,input,summary):focus-visible{outline:2px solid var(--tur);outline-offset:2px}
+.chips{display:flex;flex-wrap:wrap;gap:6px;margin:10px 0}.chips button{font-size:13px;padding:4px 10px;background:var(--soft);color:var(--tx);border-color:var(--ln)}
+#out{min-height:56px;margin:10px 0;white-space:pre-wrap}details{margin-top:8px;color:var(--mu);font-size:13px}
+pre{white-space:pre-wrap;word-break:break-word;background:var(--bg);border-radius:8px;padding:8px;margin:6px 0}
+.t{display:flex;gap:8px;font-size:13px;padding:3px 0}.ok{color:var(--leaf)}.bad{color:var(--mad)}
+.note{color:var(--mu);font-size:13px}table{width:100%;border-collapse:collapse;font-size:14px}th,td{text-align:right;padding:5px 4px;border-bottom:1px solid var(--ln)}th:first-child,td:first-child{text-align:left}th{color:var(--mu);font-weight:500}.ql button{display:block;width:100%;text-align:left;font-size:13px;padding:3px 6px;margin:2px 0;background:transparent;color:var(--tx);border-color:transparent}.ql b{display:block;margin-top:8px;font-size:13px}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header><div><h1>VastraWorks business dashboard</h1><p>Sales, returns and margin for a fashion manufacturer and wholesaler, Nov 2024 to Oct 2026</p></div><span class="tag">Synthetic data, not a real company</span></header>
+<div class="band" id="kpi"></div>
+<div class="grid">
+<main>
+<section><h2>What needs attention</h2><ul class="ins" id="ins"></ul></section>
+<section><h2>What changed in the latest month</h2><div id="chg"></div></section><section><h2>Alerts</h2><ul class="ins" id="alr"></ul></section>
+<section><h2>Net sales and gross profit by month</h2><div class="chart"><div id="chart"></div><div class="lg"><span><i style="background:var(--pr)"></i>Net sales</span><span><i style="background:var(--tur)"></i>Gross profit</span></div></div></section>
+<div class="two"><section><h2>Net sales by category</h2><div id="cats"></div></section><section><h2>Net sales by market</h2><div id="mkts"></div></section></div>
+<div class="two"><section><h2>Factories, last 12 months</h2><div id="fac"></div></section><section><h2>Stock and buyers</h2><div id="buy"></div></section></div>
+<details><summary>How the numbers are defined</summary><p>Net sales are shipped units after discounts. Gross profit is net sales minus cost of goods. Gross margin is gross profit divided by net sales. Return rate is returned units divided by units shipped. The KPIs cover the last 12 months, compared with the 12 months before. All figures are in Indian rupees and generated by a fixed formula for this demo. Production and buyer records are modeled separately from sales: stock is units made minus units shipped, and buyer spend is allocated to match market sales.</p></details>
+</main>
+<aside class="ask" id="ask">
+<h2>Ask the data</h2>
+<p class="note">Answers are calculated from the dashboard data. If the data can’t answer, the assistant says so.</p>
+<input id="q" placeholder="Ask about sales, returns, margin or markets" aria-label="Your question" maxlength="200">
+<div style="display:flex;gap:8px;margin-top:8px"><button id="go">Ask</button><button id="stop" class="o" hidden>Stop</button></div>
+<div class="chips" id="chips"></div>
+<div id="out" aria-live="polite"></div>
+<details id="how" hidden><summary>How this was calculated</summary><pre id="log"></pre></details>
+<details class="ql"><summary>Browse 50 sample questions</summary><div id="ql"></div></details><details><summary>Quality check: 14 test questions</summary><p class="note">Asks 14 questions with known answers and scores the replies. Takes a few minutes.</p><button class="o" id="run">Run the check</button><div id="res"></div></details>
+</aside>
+</div>
+</div>
+<script>
+const $=s=>document.querySelector(s),MN=["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+const rng=a=>()=>{a|=0;a=a+0x6D2B79F5|0;let t=Math.imul(a^a>>>15,1|a);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296},R=rng(7);
+const C={"Women ethnic wear":{w:1.5,p:2100,mg:.56,rr:.05},"Menswear":{w:1.2,p:1700,mg:.45,rr:.08},"Kidswear":{w:.8,p:900,mg:.43,rr:.07},"Home textiles":{w:.9,p:1300,mg:.41,rr:.04},"Fabrics":{w:1,p:600,mg:.34,rr:.03},"Accessories":{w:.7,p:480,mg:.38,rr:.12}};
+const K={North:1.3,West:1.2,South:1,East:.7,UAE:.6,UK:.5},S=[.85,.8,.9,.95,.9,.85,.9,1,1.1,1.35,1.5,1.05];
+const M=[...Array(24)].map((_,i)=>{const d=new Date(2024,10+i,1);return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")});
+const lab=m=>MN[+m.slice(5)-1]+" "+m.slice(0,4);
+const rows=[];M.forEach((m,i)=>Object.entries(C).forEach(([c,o])=>Object.entries(K).forEach(([k,kw])=>{
+const u=Math.round(430*o.w*kw*S[+m.slice(5)-1]*(1+i*.012)*(.8+.4*R())),rr=o.rr*(c==="Accessories"&&i>16?1+(i-16)*.06:1)*(.8+.4*R()),n=u*o.p*(.9+.05*R());
+rows.push({m,c,k,u,n,g:n*(o.mg+(R()-.5)*.04),r:Math.round(u*rr)})})));
+const inr=v=>v>=1e7?"₹"+(v/1e7).toFixed(2)+" Cr":v>=1e5?"₹"+(v/1e5).toFixed(2)+" lakh":"₹"+Math.round(v).toLocaleString("en-IN");
+const agg=rs=>rs.reduce((a,r)=>(a.n+=r.n,a.g+=r.g,a.u+=r.u,a.r+=r.r,a),{n:0,g:0,u:0,r:0});
+const val=(s,m)=>m==="gross_margin_pct"?s.g/s.n*100:m==="return_rate_pct"?s.r/s.u*100:m==="net_sales"?s.n:m==="gross_profit"?s.g:m==="units_shipped"?s.u:s.r;
+const show=(m,v)=>m.endsWith("pct")?v.toFixed(1)+"%":/sales|profit/.test(m)?inr(v):Math.round(v).toLocaleString("en-IN");
+function query(i){const metric=i.metric||"net_sales",gb=i.group_by||"none",f=i.from_month||M[0],t=i.to_month||M[23],key={category:"c",market:"k",month:"m"}[gb],g={};
+rows.filter(r=>(!i.category||r.c===i.category)&&(!i.market||r.k===i.market)&&r.m>=f&&r.m<=t).forEach(r=>{const x=key?r[key]:"Total";(g[x]=g[x]||[]).push(r)});
+let o=Object.entries(g).map(([name,a])=>{const v=val(agg(a),metric);return{name,label:key==="m"?lab(name):name,value:v,display:show(metric,v)}});
+o.sort((a,b)=>i.order==="time"?a.name.localeCompare(b.name):b.value-a.value);return{metric,period:f+" to "+t,rows:o.slice(0,Number(i.top_n)||12).map(({label,display})=>({name:label,value:display}))}}
+const L12=["2025-11","2026-10"],P12=["2024-11","2025-10"],sum=(a,b,f={})=>agg(rows.filter(r=>r.m>=a&&r.m<=b&&(!f.c||r.c===f.c)&&(!f.k||r.k===f.k)));
+const cur=sum(...L12),pre=sum(...P12),pc=(a,b)=>((a/b-1)*100);
+const kp=[["Net sales",inr(cur.n),pc(cur.n,pre.n),1,"%"],["Gross margin",show("gross_margin_pct",cur.g/cur.n*100),cur.g/cur.n*100-pre.g/pre.n*100,1," pts"],["Return rate",show("return_rate_pct",cur.r/cur.u*100),cur.r/cur.u*100-pre.r/pre.u*100,-1," pts"],["Units shipped",cur.u.toLocaleString("en-IN"),pc(cur.u,pre.u),1,"%"]];
+$("#kpi").innerHTML=kp.map(([a,b,d,s,u])=>`<div><small>${a}, last 12 months</small><span class="num">${b}</span><small class="${d*s>=0?"up":"dn"}">${d>=0?"▲":"▼"} ${Math.abs(d).toFixed(1)}${u} vs prior 12 months</small></div>`).join("");
+const by=(key,f)=>Object.keys(key==="c"?C:K).map(x=>({x,s:sum(...L12,{[key]:x}),p:sum(...P12,{[key]:x})}));
+const cs=by("c"),ms=by("k"),rr=[...cs].sort((a,b)=>b.s.r/b.s.u-a.s.r/a.s.u)[0],mg=[...cs].sort((a,b)=>b.s.g/b.s.n-a.s.g/a.s.n)[0],gr=[...ms].sort((a,b)=>b.s.n/b.p.n-a.s.n/a.p.n)[0];
+$("#ins").innerHTML=[["r",`${rr.x} has the highest return rate`,`${show("return_rate_pct",rr.s.r/rr.s.u*100)} against ${show("return_rate_pct",cur.r/cur.u*100)} overall. Review fit and quality checks before the next production run.`],["g",`${mg.x} earns the strongest margin`,`${show("gross_margin_pct",mg.s.g/mg.s.n*100)} gross margin. Give it priority in festive stock and promotion.`],["",`${gr.x} is growing fastest`,`Net sales up ${pc(gr.s.n,gr.p.n).toFixed(1)}% on the prior 12 months. Add stock and sales support there.`]].map(([c,a,b])=>`<li class="${c}"><b>${a}</b><span>${b}</span></li>`).join("");
+const lm=M[23],pm=M[22],cat=(m,c)=>sum(m,m,{c}),al=[];
+Object.keys(C).forEach(c=>{const a=cat(lm,c),b=cat(pm,c),rd=a.r/a.u*100-b.r/b.u*100,md=a.g/a.n*100-b.g/b.n*100;
+if(rd>=.5&&a.u>=500)al.push({h:rd>=1||a.r/a.u>=2*b.r/b.u,t:`${c}: return rate rose by ${rd.toFixed(1)} points`,d:`${show("return_rate_pct",a.r/a.u*100)} in ${lab(lm)} against ${show("return_rate_pct",b.r/b.u*100)} in ${lab(pm)}, on ${a.u.toLocaleString("en-IN")} units. Check fit, finish and recent batches.`});
+if(md<=-3&&a.n>=1e5)al.push({h:md<=-5,t:`${c}: gross margin fell by ${Math.abs(md).toFixed(1)} points`,d:`${show("gross_margin_pct",a.g/a.n*100)} in ${lab(lm)} against ${show("gross_margin_pct",b.g/b.n*100)} in ${lab(pm)} on ${inr(a.n)} of sales. Review discounts and material costs before changing prices.`})});
+al.sort((x,y)=>y.h-x.h);
+$("#alr").innerHTML=(al.length?al.map(x=>`<li class="${x.h?"r":""}"><b>${x.h?"High severity: ":"Watch: "}${x.t}</b><span>${x.d}</span></li>`).join(""):"<li class=\"g\"><b>No alerts this month</b><span>No category crossed the thresholds below.</span></li>")+`<li style="border-color:var(--ln)"><span>Rules, compared with the previous month: a return rate that rises 0.5 points or more on at least 500 units, or gross margin that falls 3 points or more on at least ₹1 lakh of sales. High severity starts at a 1.0 point rise, a doubled return rate, or a 5 point margin fall.</span></li>`;
+const ca=sum(lm,lm),cb=sum(pm,pm),tp=Object.keys(C).map(c=>({c,d:cat(lm,c).n-cat(pm,c).n})).sort((x,y)=>y.d-x.d),ch=pc(ca.n,cb.n);
+$("#chg").innerHTML=`<p style="margin:0">In ${lab(lm)}, net sales were ${inr(ca.n)}, ${ch>=0?"up":"down"} ${Math.abs(ch).toFixed(1)}% on ${lab(pm)}. Gross margin was ${show("gross_margin_pct",ca.g/ca.n*100)} against ${show("gross_margin_pct",cb.g/cb.n*100)}. Returned units were ${ca.r.toLocaleString("en-IN")} of ${ca.u.toLocaleString("en-IN")} shipped, against ${cb.r.toLocaleString("en-IN")} of ${cb.u.toLocaleString("en-IN")}. ${tp[0].c} added the most sales and ${tp[tp.length-1].c} the least.</p><p class="note" style="margin:8px 0 0">Calculation: net sales; gross profit divided by net sales; returned units divided by units shipped. ${lm} against ${pm}, all categories and markets.</p>`;
+const mo=M.map(m=>sum(m,m)),mx=Math.max(...mo.map(x=>x.n)),W=640,H=210,px=i=>40+i*(W-56)/23,py=v=>H-28-v/mx*(H-50),pk=mo.findIndex(x=>x.n===mx);
+const ln=k=>mo.map((x,i)=>px(i).toFixed(1)+","+py(x[k]).toFixed(1)).join(" ");
+$("#chart").innerHTML=`<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Monthly net sales and gross profit"><g stroke="var(--ln)">${[0,.5,1].map(f=>`<line x1="40" x2="${W-16}" y1="${py(mx*f)}" y2="${py(mx*f)}"/>`).join("")}</g><g fill="var(--mu)" font-size="11">${[0,.5,1].map(f=>`<text x="0" y="${py(mx*f)+4}">${inr(mx*f)}</text>`).join("")}<text x="40" y="${H-6}">${lab(M[0])}</text><text x="${W-16}" y="${H-6}" text-anchor="end">${lab(M[23])}</text></g><polyline fill="none" stroke="var(--pr)" stroke-width="2.5" points="${ln("n")}"/><polyline fill="none" stroke="var(--tur)" stroke-width="2.5" points="${ln("g")}"/><circle cx="${px(pk)}" cy="${py(mx)}" r="4" fill="var(--pr)"/><text x="${Math.min(px(pk)+8,W-110)}" y="${py(mx)-4}" font-size="12" fill="var(--tx)">Peak: ${lab(M[pk])}</text></svg>`;
+const bars=(a,id)=>{const t=[...a].sort((x,y)=>y.s.n-x.s.n),m=t[0].s.n;$(id).innerHTML=t.map(o=>`<div class="row"><span>${o.x}</span><span class="bar"><i style="width:${o.s.n/m*100}%"></i></span><b>${inr(o.s.n)}</b></div>`).join("")};bars(cs,"#cats");bars(ms,"#mkts");
+const R2=rng(11),F={Surat:{k:.97,c:["Home textiles","Fabrics"]},Jaipur:{k:1,c:["Women ethnic wear","Accessories"]},Tiruppur:{k:1.05,c:["Menswear","Kidswear"]}},fOf=c=>Object.keys(F).find(f=>F[f].c.includes(c));
+const PR=[];M.forEach(m=>Object.keys(C).forEach(c=>{const a=agg(rows.filter(r=>r.m===m&&r.c===c)),f=fOf(c),made=Math.round(a.u*(1+.07*R2()));PR.push({m,f,c,made,rej:Math.round(made*(.02+.04*R2()+(f==="Tiruppur"?.015:0))),cost:made*(a.n-a.g)/a.u*F[f].k,ship:a.u})}));
+const CAP={};Object.keys(F).forEach(f=>CAP[f]=Math.max(...M.map(m=>PR.filter(p=>p.m===m&&p.f===f).reduce((s,p)=>s+p.made,0)))*1.12);
+function qP(i){const metric=i.metric||"units_made",f=i.from_month||M[0],t=i.to_month||M[23],key={factory:"f",category:"c",month:"m"}[i.group_by],g={};
+PR.filter(p=>(!i.factory||p.f===i.factory)&&(!i.category||p.c===i.category)&&p.m>=f&&p.m<=t).forEach(p=>{const x=key?p[key]:"Total";(g[x]=g[x]||[]).push(p)});
+const o=Object.entries(g).map(([name,a])=>{const s=a.reduce((z,p)=>(z.m+=p.made,z.r+=p.rej,z.c+=p.cost,z),{m:0,r:0,c:0});const cat=PR.filter(p=>p.c===name);
+const v=metric==="units_made"?s.m:metric==="rejected_units"?s.r:metric==="reject_rate_pct"?s.r/s.m*100:metric==="cost_per_unit"?s.c/s.m:metric==="capacity_used_pct"?(key==="f"?s.m/new Set(a.map(p=>p.m)).size/CAP[name]*100:NaN):metric==="stock_weeks"?(key==="c"?cat.reduce((z,p)=>z+p.made-p.ship,0)/(cat.filter(p=>p.m>="2026-08").reduce((z,p)=>z+p.ship,0)/13):NaN):NaN;
+return{name:key==="m"?lab(name):name,v,display:isNaN(v)?"n/a":metric==="cost_per_unit"?"₹"+Math.round(v).toLocaleString("en-IN"):metric==="stock_weeks"?v.toFixed(1)+" weeks":metric.endsWith("pct")?v.toFixed(1)+"%":Math.round(v).toLocaleString("en-IN")}});
+o.sort((a,b)=>i.order==="time"?0:b.v-a.v);return{metric,period:f+" to "+t,rows:o.map(({name,display})=>({name,value:display}))}}
+const R3=rng(23),BN={North:46,West:40,South:34,East:22,UAE:16,UK:12},B=[];
+Object.entries(BN).forEach(([k,n])=>{const ex=k==="UAE"||k==="UK",bs=[...Array(n)].map(()=>{const ty=ex?"Exporter":R3()<.55?"Boutique":"Retailer",s=R3()<.6?0:Math.floor(R3()*22),e=R3()<.8?23:Math.floor(s+R3()*(23-s));return{k,ty,s,e,w:(ty==="Exporter"?3:ty==="Retailer"?2.2:1)*(.5+R3())}});
+const act=bs.filter(b=>b.e>=12),tot=act.reduce((z,b)=>z+b.w,0),mk=sum(...L12,{k}).n;act.forEach(b=>{b.sp=mk*b.w/tot;b.o=Math.max(1,Math.round(b.sp/({Exporter:9e5,Retailer:4e5,Boutique:1.2e5}[b.ty])))});B.push(...bs)});
+function qB(i){const metric=i.metric||"active_buyers",key={market:"k",type:"ty"}[i.group_by],g={};
+B.filter(b=>(!i.market||b.k===i.market)&&(!i.type||b.ty===i.type)).forEach(b=>{const x=key?b[key]:"Total";(g[x]=g[x]||[]).push(b)});
+const o=Object.entries(g).map(([name,a])=>{const ac=a.filter(b=>b.e>=12),v=metric==="active_buyers"?ac.length:metric==="new_buyers"?ac.filter(b=>b.s>=12).length:metric==="returning_buyers"?ac.filter(b=>b.s<12).length:metric==="lapsed_buyers"?ac.filter(b=>b.e<18).length:metric==="spend"?ac.reduce((z,b)=>z+b.sp,0):ac.reduce((z,b)=>z+b.sp,0)/ac.reduce((z,b)=>z+b.o,0);
+return{name,v,display:metric==="spend"||metric==="avg_order_value"?inr(v):String(v)}}).sort((a,b)=>b.v-a.v);return{metric,period:"last 12 months (lapsed = active in the last 12 months but no order in the last 6)",rows:o.map(({name,display})=>({name,value:display}))}}
+const mkT=(name,description,props,fn)=>({name,description,inputSchema:{type:"object",properties:props,required:["metric"]},execute:async i=>{LOG.push({tool:name,...i});return fn(i)}});
+const tool2=mkT("query_production","Production by factory (Surat, Jaipur, Tiruppur) and category: units made, rejects, cost per unit, capacity used, stock in weeks of sales. Returns rows of {name, value}. capacity_used_pct needs group_by factory; stock_weeks needs group_by category.",{metric:{type:"string",enum:["units_made","rejected_units","reject_rate_pct","cost_per_unit","capacity_used_pct","stock_weeks"]},group_by:{type:"string",enum:["none","factory","category","month"]},factory:{type:"string",enum:Object.keys(F)},category:{type:"string",enum:Object.keys(C)},from_month:{type:"string"},to_month:{type:"string"},order:{type:"string",enum:["value","time"]}},qP);
+const tool3=mkT("query_buyers","Wholesale buyers over the last 12 months: active, new, returning and lapsed buyers, spend and average order value, by market or buyer type (Boutique, Retailer, Exporter). Returns rows of {name, value}.",{metric:{type:"string",enum:["active_buyers","new_buyers","returning_buyers","lapsed_buyers","spend","avg_order_value"]},group_by:{type:"string",enum:["none","market","type"]},market:{type:"string",enum:Object.keys(K)},type:{type:"string",enum:["Boutique","Retailer","Exporter"]}},qB);
+const fj=m=>Object.fromEntries(qP({metric:m,group_by:"factory",from_month:L12[0]}).rows.map(r=>[r.name,r.value])),um=fj("units_made"),rj=fj("reject_rate_pct"),cp=fj("cost_per_unit"),cu=fj("capacity_used_pct");
+$("#fac").innerHTML="<table><tr><th>Factory</th><th>Units made</th><th>Rejects</th><th>Cost per unit</th><th>Capacity used</th></tr>"+Object.keys(F).map(f=>`<tr><td>${f}</td><td>${um[f]}</td><td>${rj[f]}</td><td>${cp[f]}</td><td>${cu[f]}</td></tr>`).join("")+"</table>";
+const sw=qP({metric:"stock_weeks",group_by:"category"}).rows,qt=(m,t)=>qB({metric:m,group_by:"type"}).rows.find(r=>r.name===t).value;
+$("#buy").innerHTML="<table><tr><th>Category</th><th>Stock on hand</th></tr>"+sw.map(r=>`<tr><td>${r.name}</td><td>${r.value}</td></tr>`).join("")+"</table><table style='margin-top:14px'><tr><th>Buyer type</th><th>Active</th><th>New</th><th>Lapsed</th><th>Avg order</th></tr>"+["Retailer","Boutique","Exporter"].map(t=>`<tr><td>${t}</td><td>${qt("active_buyers",t)}</td><td>${qt("new_buyers",t)}</td><td>${qt("lapsed_buyers",t)}</td><td>${qt("avg_order_value",t)}</td></tr>`).join("")+"</table>";
+const Q=[["CEO",["How much did we sell in the last 12 months compared with the year before?","What is our gross margin and is it improving?","Which category and market earn the most profit?","Where are we losing the most to returns?","What share of yearly sales does our best month carry?","Are UAE and UK growing faster than India?","What should we make more of next season?","Which three problems should we fix first?","What is our net profit after salaries and rent?","How much cash do we need for the next festive season?"]],["Sales",["Which market grew fastest compared with last year?","Which market has the lowest margin?","How did UK sales change over the last six months?","Which category sells best in each market?","How much of our sales come from the biggest market?","Which buyers order the most?","What discounts are we giving and do they hurt margin?","How much repeat business do we get from existing buyers?"]],["Production",["How many units did each factory make in the last 12 months?","What share of production is rejected, by factory?","Are we producing more than we sell?","How many weeks of stock do we hold in each category?","Which category has the longest production lead time?","Which factory has the highest cost per unit?","Can we meet the festive peak with current capacity?","How many units were returned, by category?"]],["Finance",["What is gross profit by category?","How has gross margin changed month by month?","What is the cost per unit in each category?","How much revenue do we lose to returns?","How much of our sales is collected within 60 days?","How have raw material costs changed over time?","If we cut returns by 2 points, what happens to margin?","Which category would add the most profit with a 5 percent price rise?"]],["Design",["Which categories get returned most in each market?","Which colours and prints sell best?","Which sizes get returned most?","Which products sell best in festive months?","Which designs sell well in the UAE but poorly in India?","What are the main reasons for returns?","Which category should lead our Diwali collection?","How long does a product keep selling before it fades?"]],["Buyers",["How many active buyers do we have in each market?","What share of buyers are new versus returning?","What is the average order value by market and buyer type?","Which buyer type brings the most spend?","How many buyers have stopped ordering recently?","How satisfied are buyers?","Which new market should we enter next?"]]];
+$("#ql").innerHTML=Q.map(([g,a])=>`<b>${g}</b>`+a.map(q=>`<button type="button">${q}</button>`).join("")).join("");$("#ql").onclick=e=>{if(e.target.tagName==="BUTTON"){$("#q").value=e.target.textContent;ask()}};
+const tool={name:"query_metrics",description:"Calculates a metric from the VastraWorks data, optionally filtered and grouped. Returns rows of {name, value} sorted largest first (or by time if order is time). Use it for every number in an answer.",inputSchema:{type:"object",properties:{metric:{type:"string",enum:["net_sales","gross_profit","gross_margin_pct","units_shipped","returned_units","return_rate_pct"]},group_by:{type:"string",enum:["none","category","market","month"]},category:{type:"string",enum:Object.keys(C)},market:{type:"string",enum:Object.keys(K)},from_month:{type:"string",description:"YYYY-MM, earliest 2024-11"},to_month:{type:"string",description:"YYYY-MM, latest 2026-10"},order:{type:"string",enum:["value","time"]},top_n:{type:"integer"}},required:["metric"]},execute:async i=>{LOG.push(i);return query(i)}};
+const RULES=`You answer questions about the VastraWorks sales dashboard (synthetic data, Nov 2024 to Oct 2026, Indian rupees). Use only the tools query_metrics (sales, margin, returns), query_production (factories, rejects, cost per unit, capacity, stock) and query_buyers (buyers, spend, order values) for numbers, and never guess or use outside knowledge. "Last 12 months" means from_month 2025-11 to to_month 2026-10. "Last 3 months" means 2026-08 to 2026-10. Write nothing before you have the tool results. Quote values exactly as the value field shows them. If the question is unrelated to this business, or cannot be answered or advised on from the data (it covers sales, returns, margin, units, production, stock, buyers, categories, markets and months, but not salaries, rent, cash, payments, colours, sizes, return reasons, reviews or new markets), reply exactly: I can’t answer that from this dashboard’s data. Then name what you can answer. For advice questions such as what to make, stock or promote next, do not refuse: query net sales, gross margin and return rate by category for the last 12 months and the 12 months before, then recommend one or two options in at most four sentences, citing the numbers, and end with: This is a suggestion from past sales, returns and margin, not a forecast. Otherwise answer in one to three plain sentences and stop.\n\nQuestion: `;
+let LOG=[],ctl,sample;
+const ex=["What should we make more of next season?","Which category has the highest return rate?","How did UK sales change over the last year?","Which month had the highest net sales?"];
+$("#chips").innerHTML=ex.map(e=>`<button type="button">${e}</button>`).join("");
+$("#chips").onclick=e=>{if(e.target.tagName==="BUTTON"){$("#q").value=e.target.textContent;ask()}};
+const msg=c=>({not_granted:"Claude access was declined for this page.",rate_limited:"Too many requests. Try again in a moment.",sampling_disabled:"Claude isn’t available for this account.",session_expired:"Sign in to Claude again, then retry."}[c]||"The assistant ran into a problem. Try again.");
+async function run(q,opt={}){LOG=[];return sample(RULES+q,{tools:[tool,tool2,tool3],...opt})}
+async function ask(){const q=$("#q").value.trim();if(!q)return;$("#go").disabled=true;$("#stop").hidden=false;$("#how").hidden=true;$("#out").textContent="Thinking…";ctl=new AbortController();
+try{const r=await run(q,{signal:ctl.signal,onText:({text})=>{$("#out").textContent=text}});$("#out").textContent=r.text;$("#log").textContent=LOG.length?LOG.map(x=>JSON.stringify(x)).join("\n"):"No calculation was needed.";$("#how").hidden=false}
+catch(e){$("#out").textContent=e.code==="cancelled"?"Stopped.":msg(e.code)}finally{$("#go").disabled=false;$("#stop").hidden=true}}
+$("#go").onclick=ask;$("#q").onkeydown=e=>{if(e.key==="Enter")ask()};$("#stop").onclick=()=>ctl&&ctl.abort();
+const top1=(i)=>{const r=query(i).rows[0];return r};
+const T=[["What were total net sales in the last 12 months?",()=>top1({metric:"net_sales",from_month:L12[0]}).value],["Which product category has the highest return rate in the last 12 months?",()=>top1({metric:"return_rate_pct",group_by:"category",from_month:L12[0]}).name],["Which market had the highest net sales in the last 12 months?",()=>top1({metric:"net_sales",group_by:"market",from_month:L12[0]}).name],["What is the gross margin of Women ethnic wear in the last 12 months?",()=>top1({metric:"gross_margin_pct",category:"Women ethnic wear",from_month:L12[0]}).value],["What is the return rate for Accessories in the last 3 months?",()=>top1({metric:"return_rate_pct",category:"Accessories",from_month:"2026-08"}).value],["Which month had the highest net sales?",()=>top1({metric:"net_sales",group_by:"month"}).name],["How many units were shipped to the UK in the last 12 months?",()=>top1({metric:"units_shipped",market:"UK",from_month:L12[0]}).value],["What will the weather be like next week?",()=>/can.t answer/i],["Which factory has the highest reject rate in the last 12 months?",()=>qP({metric:"reject_rate_pct",group_by:"factory",from_month:L12[0]}).rows[0].name],["How many active buyers do we have in the UK?",()=>qB({metric:"active_buyers",market:"UK"}).rows[0].value],["What is the average order value of Exporters?",()=>qB({metric:"avg_order_value",type:"Exporter"}).rows[0].value],["Which category has the fewest weeks of stock?",()=>{const r=qP({metric:"stock_weeks",group_by:"category"}).rows;return r[r.length-1].name}],["What is our net profit after salaries and rent?",()=>/can.t answer/i],["Which colour of kurta sells best?",()=>/can.t answer/i]];
+$("#run").onclick=async()=>{$("#run").disabled=true;let ok=0;$("#res").innerHTML="";
+for(const [q,key] of T){const d=document.createElement("div");d.className="t";d.textContent="Running: "+q;$("#res").append(d);let pass=false,txt="";
+try{const r=await run(q);txt=r.text;const k=key();pass=k instanceof RegExp?k.test(txt):txt.toLowerCase().includes(String(k).toLowerCase())}catch(e){txt=msg(e.code);if(e.code==="not_granted"||e.code==="rate_limited"){d.textContent="Stopped: "+txt;break}}
+if(pass)ok++;d.innerHTML=`<span class="${pass?"ok":"bad"}">${pass?"Pass":"Fail"}</span><span>${q}</span>`}
+const s=document.createElement("p");s.textContent=`Score: ${ok} of ${T.length} correct`;$("#res").append(s);$("#run").disabled=false};
+claude.use("sample").then(s=>{sample=s;if(!s)$("#ask").innerHTML=`<h2>Ask the data</h2><p class="note">The assistant needs this page opened inside Claude. The dashboard above works everywhere.</p>`}).catch(()=>{$("#ask").hidden=true});
+</script>
+</body>
+</html>
